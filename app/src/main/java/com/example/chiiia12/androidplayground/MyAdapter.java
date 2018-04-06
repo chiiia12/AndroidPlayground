@@ -1,11 +1,13 @@
 package com.example.chiiia12.androidplayground;
 
+import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import com.example.chiiia12.androidplayground.databinding.ItemCardBinding;
 
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private String[] mDataSet;
@@ -24,7 +26,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.mTextView.setText(mDataSet[position]);
+        holder.binding.setItem(new Item(mDataSet[position]));
     }
 
     @Override
@@ -33,11 +35,11 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView mTextView;
+        private ItemCardBinding binding;
 
         public ViewHolder(View view) {
             super(view);
-            this.mTextView = view.findViewById(R.id.info_text);
+            binding = DataBindingUtil.bind(view);
         }
     }
 }
