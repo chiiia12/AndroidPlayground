@@ -74,10 +74,12 @@ public class MainActivity extends AppCompatActivity {
         disposable = service.contributors(ownerEditText.getText().toString(), repositoryEditText.getText().toString())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::fromIterable)
+                .flatMap(contributor -> service.user(contributor.getLogin()))
+                .map(user -> new ContributorsListItem(user.getLogin(), user.getName()))
                 .take(5)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> adapter.setContributors(ContributorsListItem.fromJson(data)),
+                .subscribe(data -> adapter.setContributors(data),
                         err -> Log.e(TAG, err.getLocalizedMessage()));
     }
 
