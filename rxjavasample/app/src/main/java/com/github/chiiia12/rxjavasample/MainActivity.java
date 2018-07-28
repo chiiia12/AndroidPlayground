@@ -20,7 +20,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.SerialDisposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText repositoryEditText;
     private ContributorsAdapter adapter;
     private GitHubService service;
-    private Disposable disposable;
+    private SerialDisposable disposable = new SerialDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onLoadClicked() {
-        disposable = service.contributors(ownerEditText.getText().toString(), repositoryEditText.getText().toString())
+        disposable.set(service.contributors(ownerEditText.getText().toString(), repositoryEditText.getText().toString())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::fromIterable)
                 .flatMap(contributor -> service.user(contributor.getLogin()))
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> adapter.setContributors(data),
-                        err -> Log.e(TAG, err.getLocalizedMessage()));
+                        err -> Log.e(TAG, err.getLocalizedMessage())));
     }
 
     @Override
