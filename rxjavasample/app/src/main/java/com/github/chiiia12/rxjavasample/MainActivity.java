@@ -17,6 +17,7 @@ import com.github.chiiia12.rxjavasample.network.GitHubService;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -72,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
     private void onLoadClicked() {
         disposable = service.contributors(ownerEditText.getText().toString(), repositoryEditText.getText().toString())
                 .subscribeOn(Schedulers.io())
+                .flatMap(Observable::fromIterable)
+                .take(5)
+                .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> adapter.setContributors(ContributorsListItem.fromJson(data)),
                         err -> Log.e(TAG, err.getLocalizedMessage()));
