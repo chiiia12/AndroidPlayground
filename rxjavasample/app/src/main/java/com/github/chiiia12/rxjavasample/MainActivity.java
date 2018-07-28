@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.github.chiiia12.rxjavasample.databinding.ContributorsListItemBinding;
-import com.github.chiiia12.rxjavasample.network.Contributor;
 import com.github.chiiia12.rxjavasample.network.GitHubService;
 
 import java.util.ArrayList;
@@ -72,13 +71,7 @@ public class MainActivity extends AppCompatActivity {
         service.contributors(ownerEditText.getText().toString(), repositoryEditText.getText().toString())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> {
-                            List<ContributorsListItem> list = new ArrayList<>();
-                            for (Contributor element : data) {
-                                list.add(new ContributorsListItem(element.getLogin()));
-                            }
-                            adapter.setContributors(list);
-                        },
+                .subscribe(data -> adapter.setContributors(ContributorsListItem.fromJson(data)),
                         err -> Log.e(TAG, err.getLocalizedMessage()));
     }
 
