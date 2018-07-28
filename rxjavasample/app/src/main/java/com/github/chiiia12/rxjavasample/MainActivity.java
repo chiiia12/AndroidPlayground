@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         disposable.set(service.contributors(ownerEditText.getText().toString(), repositoryEditText.getText().toString())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::fromIterable)
-                .flatMap(contributor -> service.user(contributor.getLogin()))
+                .concatMapEager(contributor -> service.user(contributor.getLogin()))
                 .map(user -> new ContributorsListItem(user.getLogin(), user.getName()))
                 .take(5)
                 .toList()
