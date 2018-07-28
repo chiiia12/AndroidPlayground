@@ -13,6 +13,7 @@ import android.widget.EditText;
 
 import com.github.chiiia12.rxjavasample.databinding.ContributorsListItemBinding;
 import com.github.chiiia12.rxjavasample.network.GitHubService;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
         final Button loadButton = findViewById(R.id.load);
         loadButton.setOnClickListener(view -> onLoadClicked());
+        Observable.combineLatest(
+                RxTextView.textChanges(ownerEditText).map(s -> s.length() > 0),
+                RxTextView.textChanges(repositoryEditText).map(s -> s.length() > 0),
+                (ownerNotEmpty, repositoryNotEmpty) -> ownerNotEmpty && repositoryNotEmpty
+        ).subscribe(isEnable -> loadButton.setEnabled(isEnable));
     }
 
     private void onLoadClicked() {
