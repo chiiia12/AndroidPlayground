@@ -5,17 +5,21 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.github.chiiia12.rxjavasample.databinding.ContributorsListItemBinding;
+import com.github.chiiia12.rxjavasample.network.Contributor;
 import com.github.chiiia12.rxjavasample.network.GitHubService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -24,8 +28,9 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String CLIENT_ID = "XXXXX";
-    private static final String CLIENT_SECRET = "XXXXX";
+    //TODO delete application
+    private static final String CLIENT_ID = "87f2b0be5f1b6a168c51";
+    private static final String CLIENT_SECRET = "097e6216c89451fc03598c41d51f6d5ccbb2e66c";
     private EditText ownerEditText;
     private EditText repositoryEditText;
     private ContributorsAdapter adapter;
@@ -36,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ownerEditText = (EditText) findViewById(R.id.owner);
-        repositoryEditText = (EditText) findViewById(R.id.repository);
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        ownerEditText = findViewById(R.id.owner);
+        repositoryEditText = findViewById(R.id.repository);
+        final RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -59,11 +64,22 @@ public class MainActivity extends AppCompatActivity {
                 .build()
                 .create(GitHubService.class);
 
-        final Button loadButton = (Button) findViewById(R.id.load);
+        final Button loadButton = findViewById(R.id.load);
         loadButton.setOnClickListener(view -> onLoadClicked());
     }
 
     private void onLoadClicked() {
+        service.contributors(ownerEditText.getText().toString(), repositoryEditText.getText().toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> {
+                            List<ContributorsListItem> list = new ArrayList<>();
+                            for (Contributor element : data) {
+                                list.add(new ContributorsListItem(element.getLogin()));
+                            }
+                            adapter.setContributors(list);
+                        },
+                        err -> Log.e(TAG, err.getLocalizedMessage()));
     }
 
     private static class ContributorsAdapter
