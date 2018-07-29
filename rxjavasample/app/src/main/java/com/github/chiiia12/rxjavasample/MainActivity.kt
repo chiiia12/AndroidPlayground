@@ -1,10 +1,13 @@
 package com.github.chiiia12.rxjavasample
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import com.github.chiiia12.rxjavasample.databinding.ContributorsListItemBinding
@@ -98,5 +101,34 @@ class MainActivity : AppCompatActivity() {
         //TODO delete application
         private const val CLIENT_ID = "87f2b0be5f1b6a168c51"
         private const val CLIENT_SECRET = "097e6216c89451fc03598c41d51f6d5ccbb2e66c"
+    }
+
+    class ContributorsAdapter(context: Context) : RecyclerView.Adapter<MainActivity.ContributorsListItemViewHolder>() {
+        private val contributors: MutableList<ContributorsListItem>
+        private val inflater: LayoutInflater
+
+        init {
+            inflater = LayoutInflater.from(context)
+            contributors = ArrayList()
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainActivity.ContributorsListItemViewHolder {
+            return MainActivity.ContributorsListItemViewHolder(
+                    ContributorsListItemBinding.inflate(inflater, parent, false))
+        }
+
+        override fun onBindViewHolder(holder: MainActivity.ContributorsListItemViewHolder, position: Int) {
+            holder.bind(contributors[position])
+        }
+
+        override fun getItemCount(): Int {
+            return contributors.size
+        }
+
+        fun setContributors(contributors: List<ContributorsListItem>) {
+            this.contributors.clear()
+            this.contributors.addAll(contributors)
+            notifyDataSetChanged()
+        }
     }
 }
