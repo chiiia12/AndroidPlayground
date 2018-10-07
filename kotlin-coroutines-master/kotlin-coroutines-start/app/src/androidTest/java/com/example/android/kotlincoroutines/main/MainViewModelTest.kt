@@ -46,7 +46,7 @@ class MainViewModelTest {
     @Test
     fun whenMainViewModelClicked_showSnackbar() {
         subject.onMainViewClicked()
-        subject.snackbar.assertSendsEventWith("Hello, from threads!")
+        subject.snackbar.assertSendsEventWith("Hello, from coroutines!")
     }
 }
 
