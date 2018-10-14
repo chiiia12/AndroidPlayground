@@ -18,11 +18,13 @@ package com.example.android.kotlincoroutines.main
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Transformations
-import com.example.android.kotlincoroutines.main.TitleRepository.RefreshState.*
-import com.example.android.kotlincoroutines.util.BACKGROUND
 import com.example.android.kotlincoroutines.util.FakeNetworkCall
 import com.example.android.kotlincoroutines.util.FakeNetworkError
+import com.example.android.kotlincoroutines.util.FakeNetworkException
 import com.example.android.kotlincoroutines.util.FakeNetworkSuccess
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import kotlin.LazyThreadSafetyMode.NONE
 import kotlin.coroutines.experimental.suspendCoroutine
 
@@ -62,20 +64,12 @@ class TitleRepository(private val network: MainNetwork, private val titleDao: Ti
      */
     // TODO: Reimplement with coroutines and remove state listener
     fun refreshTitle(onStateChanged: TitleStateListener) {
-        onStateChanged(Loading)
-        val call = network.fetchNewWelcome()
-        call.addOnResultListener { result ->
-            when (result) {
-                is FakeNetworkSuccess<String> -> {
-                    BACKGROUND.submit {
-                        // run insertTitle on a background thread
-                        titleDao.insertTitle(Title(result.data))
-                    }
-                    onStateChanged(Success)
-                }
-                is FakeNetworkError -> {
-                    onStateChanged(Error(TitleRefreshError(result.error)))
-                }
+        withContext(Dispatchers.IO) {
+            try {
+                val result = network.fetchNewWelcome().await()
+                titleDao.insertTitle(Title(result))
+            } catch (error: FakeNetworkException) {
+                throw TitleRefreshError(error)
             }
         }
     }

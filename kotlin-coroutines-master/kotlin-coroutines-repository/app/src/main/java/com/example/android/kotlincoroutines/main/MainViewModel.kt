@@ -20,15 +20,14 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
-import com.example.android.kotlincoroutines.main.TitleRepository.RefreshState.Success
-import com.example.android.kotlincoroutines.main.TitleRepository.RefreshState.Error
-import com.example.android.kotlincoroutines.main.TitleRepository.RefreshState.Loading
+import com.example.android.kotlincoroutines.main.TitleRepository.RefreshState.*
 import com.example.android.kotlincoroutines.util.ConsumableValue
 import com.example.android.kotlincoroutines.util.singleArgViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.Main
+import kotlinx.coroutines.launch
 
 /**
  * MainViewModel designed to store and manage UI-related data in a lifecycle conscious way. This
@@ -125,6 +124,16 @@ class MainViewModel(private val repository: TitleRepository) : ViewModel() {
      */
     // TODO: Change this implementation to use coroutines
     fun refreshTitle() {
+        uiScope.launch {
+            try {
+                _spinner.value = true
+                repository.refreshTitle()
+            } catch (error: TitleRefreshError) {
+                _snackBar.value = error.message
+            } finally {
+                _spinner.value = false
+            }
+        }
         // pass a state listener as a lambda to refreshTitle
         repository.refreshTitle { state ->
             when (state) {
