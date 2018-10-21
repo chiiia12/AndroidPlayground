@@ -109,7 +109,6 @@ class TitleRepository(private val network: MainNetwork, private val titleDao: Ti
  *
  * A typealias introduces a shorthand way to say a complex type. It does not create a new type.
  */
-// TODO: Remove this typealias after rewriting refreshTitle
 typealias TitleStateListener = (TitleRepository.RefreshState) -> Unit
 
 /**
@@ -126,7 +125,6 @@ class TitleRefreshError(cause: Throwable) : Throwable(cause.message, cause)
  * @return network result after completion
  * @throws Throwable original exception from library if network request fails
  */
-// TODO: Implement FakeNetworkCall<T>.await() here
 suspend fun <T> FakeNetworkCall<T>.await(): T {
 
     return suspendCoroutine { continuation ->

@@ -124,26 +124,8 @@ class MainViewModel(private val repository: TitleRepository) : ViewModel() {
      */
     // TODO: Change this implementation to use coroutines
     fun refreshTitle() {
-        uiScope.launch {
-            try {
-                _spinner.value = true
-                repository.refreshTitle()
-            } catch (error: TitleRefreshError) {
-                _snackBar.value = error.message
-            } finally {
-                _spinner.value = false
-            }
-        }
-        // pass a state listener as a lambda to refreshTitle
-        repository.refreshTitle { state ->
-            when (state) {
-                is Loading -> _spinner.postValue(true)
-                is Success -> _spinner.postValue(false)
-                is Error -> {
-                    _spinner.postValue(false)
-                    _snackBar.postValue(state.error.message)
-                }
-            }
+        launchDataLoad {
+            repository.refreshTitle()
         }
     }
 
@@ -160,4 +142,16 @@ class MainViewModel(private val repository: TitleRepository) : ViewModel() {
      *              spinner will stop
      */
     // TODO: Add launchDataLoad here then refactor refreshTitle to use it
+    private fun launchDataLoad(block: suspend () -> Unit): Job {
+        return uiScope.launch {
+            try {
+                _spinner.value = true
+                block()
+            } catch (error: TitleRefreshError) {
+                _snackBar.value = error.message
+            } finally {
+                _spinner.value = false
+            }
+        }
+    }
 }
