@@ -1,6 +1,6 @@
 package com.github.chiiia12.jetpacksample
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 
 class TodoLiveData : MutableLiveData<TodoBindingModel>() {

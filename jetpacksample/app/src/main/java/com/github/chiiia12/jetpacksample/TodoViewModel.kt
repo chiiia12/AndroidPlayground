@@ -1,6 +1,6 @@
 package com.github.chiiia12.jetpacksample
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 
 class TodoViewModel : ViewModel() {
     val todoLiveData = TodoLiveData()

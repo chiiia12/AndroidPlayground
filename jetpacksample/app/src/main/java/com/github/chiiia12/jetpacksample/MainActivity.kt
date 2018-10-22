@@ -1,8 +1,8 @@
 package com.github.chiiia12.jetpacksample
 
-import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import com.github.chiiia12.jetpacksample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
