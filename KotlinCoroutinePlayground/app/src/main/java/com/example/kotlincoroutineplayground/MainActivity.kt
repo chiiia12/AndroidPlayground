@@ -14,10 +14,10 @@ class MainActivity : AppCompatActivity() {
         Timber.plant(Timber.DebugTree())
         Timber.d("coroutine start")
         uiScope.launch {
-            val completeFirst = completeFirst()
-            val completeSecond = completeSecond()
+            val completeFirst = async { completeFirst() }
+            val completeSecond = async { completeSecond() }
             Timber.d("==================")
-            Timber.d("$completeFirst $completeSecond")
+            Timber.d("${completeFirst.await()} ${completeSecond.await()}")
         }
     }
 
