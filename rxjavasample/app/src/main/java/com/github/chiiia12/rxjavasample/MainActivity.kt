@@ -15,6 +15,7 @@ import com.github.chiiia12.rxjavasample.network.GitHubService
 import com.github.chiiia12.rxjavasample.network.User
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.SerialDisposable
 import io.reactivex.functions.BiFunction
@@ -65,6 +66,22 @@ class MainActivity : AppCompatActivity() {
                 RxTextView.textChanges(ownerEditText!!).map { s -> s.isNotEmpty() },
                 RxTextView.textChanges(repositoryEditText!!).map { s -> s.isNotEmpty() },
                 BiFunction { ownerNotEmpty, repositoryNotEmpty -> ownerNotEmpty!! && repositoryNotEmpty!! }).subscribe { isEnable -> loadButton.isEnabled = isEnable!! }
+
+        val single = Single.fromCallable {
+            Thread.sleep(1000)
+            listOf(1, 2, 3, 4, 5)
+        }.doOnSuccess {
+            Log.d("MainActivity", "doOnSuccess $it")
+            it.filter { num ->
+                num >= 3
+            }
+        }.map {
+            Log.d("MainActivity", "map$it")
+            it.map {
+                it + 2
+            }
+        }
+        Log.d("MainActivity", "blockingGet ${single.blockingGet()}")
     }
 
     private fun onLoadClicked() {
@@ -86,7 +103,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    class ContributorsListItemViewHolder(private val binding: ContributorsListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ContributorsListItemViewHolder(private val binding: com.github.chiiia12.rxjavasample.databinding.ContributorsListItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(contributor: ContributorsListItem) {
             binding.contributor = contributor

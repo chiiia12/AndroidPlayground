@@ -48,8 +48,8 @@ class MainActivity : AppCompatActivity() {
         val database = getDatabase(this)
         val repository = TitleRepository(MainNetworkImpl, database.titleDao)
         val viewModel = ViewModelProviders
-            .of(this, MainViewModel.FACTORY(repository))
-            .get(MainViewModel::class.java)
+                .of(this, MainViewModel.FACTORY(repository))
+                .get(MainViewModel::class.java)
 
         // When rootLayout is clicked call onMainViewClicked in ViewModel
         rootLayout.setOnClickListener {
@@ -76,5 +76,7 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.make(rootLayout, value, Snackbar.LENGTH_SHORT).show()
             }
         })
+
+        viewModel.testMergeErrorDelay()
     }
 }

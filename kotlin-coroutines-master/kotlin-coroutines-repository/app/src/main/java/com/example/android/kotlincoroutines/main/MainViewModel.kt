@@ -20,14 +20,11 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
-import com.example.android.kotlincoroutines.main.TitleRepository.RefreshState.*
+import android.util.Log
 import com.example.android.kotlincoroutines.util.ConsumableValue
 import com.example.android.kotlincoroutines.util.singleArgViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.android.Main
-import kotlinx.coroutines.launch
 
 /**
  * MainViewModel designed to store and manage UI-related data in a lifecycle conscious way. This
@@ -116,18 +113,18 @@ class MainViewModel(private val repository: TitleRepository) : ViewModel() {
      * a snackbar.
      */
     fun onMainViewClicked() {
-        refreshTitle()
+//        refreshTitle()
     }
 
     /**
      * Refresh the title, showing a loading spinner while it refreshes and errors via snackbar.
      */
     // TODO: Change this implementation to use coroutines
-    fun refreshTitle() {
-        launchDataLoad {
-            repository.refreshTitle()
-        }
-    }
+//    fun refreshTitle() {
+//        launchDataLoad {
+//            repository.refreshTitle()
+//        }
+//    }
 
     /**
      * Helper function to call a data load function with a loading spinner, errors will trigger a
@@ -153,5 +150,26 @@ class MainViewModel(private val repository: TitleRepository) : ViewModel() {
                 _spinner.value = false
             }
         }
+    }
+
+    fun testMergeErrorDelay() {
+        uiScope.launch {
+            val completeFirst = async { completeFirst() }
+            val completeSecond = async { completeSecond() }
+            Log.d(MainViewModel::class.java.simpleName, "==========")
+            Log.d(MainViewModel::class.java.simpleName, "${completeFirst.await()} ${completeSecond.await()}")
+        }
+    }
+
+    private suspend fun completeFirst(): String {
+        delay(2000)
+        Log.d(MainViewModel::class.java.simpleName, "completeFirst")
+        return "first"
+    }
+
+    private suspend fun completeSecond(): String {
+        delay(1000)
+        Log.d(MainViewModel::class.java.simpleName, "completeSecond")
+        return "second"
     }
 }

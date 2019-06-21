@@ -19,14 +19,7 @@ package com.example.android.kotlincoroutines.main
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Transformations
 import com.example.android.kotlincoroutines.util.FakeNetworkCall
-import com.example.android.kotlincoroutines.util.FakeNetworkError
-import com.example.android.kotlincoroutines.util.FakeNetworkException
-import com.example.android.kotlincoroutines.util.FakeNetworkSuccess
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.withContext
 import kotlin.LazyThreadSafetyMode.NONE
-import kotlin.coroutines.experimental.suspendCoroutine
 
 /**
  * TitleRepository provides an interface to fetch a title or request a new one be generated.
@@ -64,14 +57,14 @@ class TitleRepository(private val network: MainNetwork, private val titleDao: Ti
      */
     // TODO: Reimplement with coroutines and remove state listener
     fun refreshTitle(onStateChanged: TitleStateListener) {
-        withContext(Dispatchers.IO) {
-            try {
-                val result = network.fetchNewWelcome().await()
-                titleDao.insertTitle(Title(result))
-            } catch (error: FakeNetworkException) {
-                throw TitleRefreshError(error)
-            }
-        }
+//        withContext(Dispatchers.IO) {
+//            try {
+//                val result = network.fetchNewWelcome().await()
+//                titleDao.insertTitle(Title(result))
+//            } catch (error: FakeNetworkException) {
+//                throw TitleRefreshError(error)
+//            }
+//        }
     }
 
     /**
@@ -127,13 +120,13 @@ class TitleRefreshError(cause: Throwable) : Throwable(cause.message, cause)
  */
 suspend fun <T> FakeNetworkCall<T>.await(): T {
 
-    return suspendCoroutine { continuation ->
-        addOnResultListener { result ->
-            when (result) {
-                is FakeNetworkSuccess<T> -> continuation.resume(result.data)
-                is FakeNetworkError -> continuation.resumeWithException(result.error)
-            }
-        }
-
+//    return suspendCoroutine { continuation ->
+//        addOnResultListener { result ->
+//            when (result) {
+//                is FakeNetworkSuccess<T> -> continuation.resume(result.data)
+//                is FakeNetworkError -> continuation.resumeWithException(result.error)
+//            }
+//        }
+//
     }
 }
