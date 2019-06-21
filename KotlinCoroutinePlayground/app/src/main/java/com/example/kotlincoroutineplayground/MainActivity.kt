@@ -14,10 +14,14 @@ class MainActivity : AppCompatActivity() {
         Timber.plant(Timber.DebugTree())
         Timber.d("coroutine start")
         uiScope.launch {
-            val completeFirst = async { completeFirst() }
-            val completeSecond = async { completeSecond() }
-            Timber.d("==================")
-            Timber.d("${completeFirst.await()} ${completeSecond.await()}")
+            runCatching {
+                val completeFirst = async { completeFirst() }
+                val completeSecond = async { completeSecond() }
+                Timber.d("==================")
+                Timber.d("${completeFirst.await()} ${completeSecond.await()}")
+            }.onFailure {
+                Timber.e(it)
+            }
         }
     }
 
@@ -30,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private suspend fun completeSecond(): String {
         delay(1000)
         Timber.d("completeSecond")
+        throw Throwable("test throwable")
         return "completeSecond"
     }
 }
